@@ -2,7 +2,7 @@
 
 # ESET Nod32 Update Mirror
 
-> английская версия [доступен здесь](https://github.com/tarampampam/nod32-update-mirror/blob/master/README.md).
+> английская версия [доступен здесь](https://github.com/ndasjowo/nod32-update-mirror/blob/master/README.md).
 
 The script for creating a mirror of the anti-virus updates database "Eset Nod32". For its full-fledged operation it will be required::
 
