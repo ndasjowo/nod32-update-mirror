@@ -2,156 +2,156 @@
 
 # ESET Nod32 Update Mirror
 
-> English version [available here](https://github.com/ndasjowo/nod32-update-mirror/blob/master/README.eng.md).
+> английская версия [доступен здесь](https://github.com/ndasjowo/nod32-update-mirror/blob/master/README.rus.md).
 
-Скрипт для создания зеркала баз обновлений антивируса "Eset Nod32". Для его полноценного функционирования потребуется:
+The script for creating a mirror of the anti-virus updates database "Eset Nod32". For its full-fledged operation it will be required::
 
-  - **`bash`** *(тестировался на версиях `4.1.11(2)`, `4.2.24(1)` и `4.2.45(1)`)* или `cygwin`;
-  - **`curl`** *(тестировался на версиях `7.29.0`, `7.37.0`)* или **`wget`** *(тестировался на версиях `1.14`, `1.15` и `1.18`)*;
-  - **`unrar`** *(тестировался на версиях `3.39`, `4.0` и `5.00 beta 3`, для работы с официальными зеркалами)*;
-  - `sed`, `awk` и некоторые другие "стандартные" приложения;
-  - **`nginx`** *(тестировался на версиях `1.6.3`, `1.9.12` и `1.10.1` без каких-либо экзотических модулей)*.
+  - **`bash`** *(Tested on versions `4.1.11(2)`, `4.2.24(1)` and `4.2.45(1)`)* or `cygwin`;
+  - **`curl`** *(Tested on versions `7.29.0`, `7.37.0`)* and **`wget`** *(Tested on versions , and `1.14`, `1.15` and `1.18`)*;
+  - **`unrar`** *(Tested on versions `3.39`, `4.0` and `5.00 beta 3`, for work with official mirrors)*;
+  - `sed`, `awk` and some other "standard" applications;
+  - **`nginx`** *(тested on versions `1.6.3`, `1.9.12` and `1.10.1` without any exotic modules)*.
 
-Параметры запуска и дополнительные функции смотри запустив скрипт с флагом `--help`.
+Startup parameters and additional functions, see running the script with the flag `--help`.
 
 ![Console screenshot](https://cloud.githubusercontent.com/assets/7326800/16709324/ee055c38-4626-11e6-832e-17f40576d8c2.png)
 
-## <i class="icon-file"></i>Особенности
+## <i class="icon-file"></i>Features
 
- - Не требует от системы каких-либо экзотических или ресурсоемких приложений, экономично относится к ресурсам системы;
- - Успешно работает с различными версиями антивирусов Eset Nod32 *(для определения "рабочих" директорий различных версий Eset Nod32 используется проверки `User-Agent` и редиректы средствами `nginx`)*;
- - Умеет автоматически искать и использовать *(поддерживая их список в актуальном состоянии)* бесплатные ключи обновлений (**ВНИМАНИЕ! ДАННЫЙ ФУНКЦИОНАЛ ТОЛЬКО ДЛЯ ОЗНАКОМЛЕНИЯ И ТЕСТИРОВАНИЯ РАБОТЫ! ИСПОЛЬЗУЙТЕ ТОЛЬКО ЛЕГАЛЬНО КУПЛЕННЫЕ КЛЮЧИ!**)
- - Возможно размещение базы обновлений как в корневой директории домена, так и в произвольной под-директории *(потребуется самостоятельно переписать пути в файле конфигурации `nginx`)*;
- - При указании не официальных серверов обновлений *(их можно указывать до 10 шт.)* и возникновении ошибки в процессе с первого указанного сервера - обновление произойдет со второго, иначе - с третьего, и так далее;
- - Реализована возможность скачивать обновления только для определенных программных продуктов, платформ, языков и версий Eset Nod32;
- - Поддерживается отладочный режим работы для быстрого выявления источников возможных проблем;
- - Пишет подробный лог;
- - Возможно указание лимитов скорости и задержек при скачивании файлов обновлений;
- - При завершении обновления пишет в отдельные файлы версию базы обновлений и дату обновления *(имена файлов настраиваются)*;
- - Скачивает только обновленные файлы.
+ - Does not require any exotic or resource-intensive applications from the system, economically refers to system resources;
+ - Works successfully with different versions of Eset Nod32 antivirus software *(for checking the "working" directories of different versions of Eset Nod32, checks `User-Agent` and redirects are used by means `nginx`)*;
+ - Can automatically search for and use *(keeping their list up to date)* free update keys (**ATTENTION, THIS FUNCTIONAL IS ONLY FOR INTRODUCING AND TESTING THE WORK! USE ONLY LEGALLY PURCHASED KEYS!**)
+ - It is possible to place the update database both in the root directory of the domain and in an arbitrary sub-directory *(you will need to rewrite the paths in the configuration file yourself `nginx`)*;
+ - If you specify non-official update servers *(they can be specified up to 10 pcs.)* And an error occurs in the process from the first specified server, the update will occur from the second one, differently from the third one, and so on;
+ - Implemented the ability to download updates only for certain software products, platforms, languages ​​and versions of Eset Nod32;
+ - Supports debug mode to quickly identify sources of possible problems;
+ - Writes a detailed log;
+ - It is possible to specify the speed limits and delays in downloading update files;
+ - At the completion of the update, the version of the update database and the update date are written to separate files *(file names are configured)*;
+ - Only downloaded the updated files.
 
 
-## <i class="icon-download"></i>Установка
+## <i class="icon-download"></i>Installation
 
-Для примера рассмотрим установку на чистый дистрибутив **CentOS 7** *(от других дистрибутивов будет лишь отличаться менеджером пакетов, расположением некоторых конфигов и методом установки `unrar`)*.
+For example, consider installing a clean distribution of **CentOS 7** *(from other distributions will only differ package manager, the location of some configs and installation method `unrar`)*.
 
-- Переходим в домашнюю директорию:
+- Go to the home directory:
 ```shell
 $ cd ~
 ```
- - Ставим необходимые пакеты:
+ - We put the necessary packages:
 ```shell
 $ sudo yum -y install epel-release 
-$ sudo yum -y install nano wget curl git nginx # Только после установки epel-release
+$ sudo yum -y install nano wget curl git nginx # Only after installing epel-release
 $ wget -O unrar.rpm http://pkgs.repoforge.org/unrar/unrar-5.0.3-1.el6.rf.$(arch).rpm
 $ sudo rpm -Uvh ./unrar.rpm && rm -f ./unrar.rpm
 ```
-- Клонируем данный репозиторий:
+- We clone this repository:
 ```shell
 $ git clone https://github.com/tarampampam/nod32-update-mirror.git
 ```
-- Переместим директорию с веб-интерфейсом в `/usr/share/nginx/`, и в последствии её будем использовать как хранилище файлов зеркала *(доступную через web, разумеется)*:
+- We will move the directory with the web interface in `/usr/share/nginx/`, and afterwards it will be used as a mirror file store *(accessible via the web, of course)*:
 ```shell
 $ mv ./nod32-update-mirror/webroot /usr/share/nginx/nod32mirror
 ```
-- Перейдем к настройке `nginx`, для чего возьмем пример конфигурации и поправим его:
+- Let's proceed to the configuration `nginx`, for which we take an example of the configuration and correct it:
 ```shell
 $ sudo cp ./nod32-update-mirror/nginx.server.conf /etc/nginx/conf.d/nod32mirror.conf
 $ nano /etc/nginx/conf.d/nod32mirror.conf
-# Выставляем:
+# We expose:
 #   listen 80;
-#   server_name %имя_домена_полностью%; или комментируем эту строку, если необходимо чтоб доступ к зеркалу был просто IP адресу сервера
+#   server_name %domain_name% complete; or comment this line, if necessary to access the mirror was just the IP address of the server
 #   root /usr/share/nginx/nod32mirror;
 ```
-- Если `server_name` не был указан выше, то необходимо удалить или закомментировать виртуальный сервер `nginx` "по умолчанию", для чего выполняем:
+- If `server_name` it was not specified above, then you must delete or comment out the virtual server `nginx` "by default", for which we perform:
 ```shell
 $ sudo nano /etc/nginx/nginx.conf
-# Удаляем или комментируем секцию 'server', так как иначе сервер будет отвечать 'заглушкой'
+# Remove or comment on the 'server' section, otherwise the server will respond with a 'stub'
 ```
-- После чего тестируем конфигурацию, и если всё хорошо - то говорим `nginx` перечитать свои конфиги:
+- After that we test the configuration, and if everything is good - then we say to `nginx` reread our configs:
 ```shell
 $ nginx -t
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 $ sudo nginx -s reload
 ```
-- Открываем в браузере указанный `server_name` *(или его IP адрес)*, проверяем корректное отображение веб-интерфейса;
-> Опционально:
-> Можно загрузить свои дистрибутивы антивируса Eset Nod32 в директорию `/usr/share/nginx/nod32mirror/download` и поправить файл `/usr/share/nginx/nod32mirror/webface/index.html`, указав в `nod32button.settings.download.links` имена файлов дистрибутивов, и установив `nod32button.settings.download.enabled` в `true`. Таким образом посетители зеркала смогут не только получать с него обновления, но и скачать необходимые *(или уже преднастроенные на это самое зеркало)* дистрибутивы при его посещении.
+- We open the specified `server_name` *(or its IP address)* in the browser, check the correct display of the web interface;
+> Optionally:
+> You can download your Eset Nod32 antivirus distributions to a directory `/usr/share/nginx/nod32mirror/download` and fix the file `/usr/share/nginx/nod32mirror/webface/index.html`, by specifying the `nod32button.settings.download.links` distribution file names in the files, and by setting `nod32button.settings.download.enabled` to `true`. Thus, visitors to the mirror will be able not only to receive updates from it, but also to download the necessary distributions *(or already preconfigured to that very mirror)* when they visit.
 
-- Создаем директорию в которой будет располагаться скрипт, и перемещаем его директорию в неё:
+- Create a directory in which the script will be located, and move its directory into it:
 ```shell
 $ NOD_SCRIPTS_DEST=~/scripts
 $ mkdir -p "$NOD_SCRIPTS_DEST"
 $ mv ./nod32-update-mirror/nod32-mirror "$NOD_SCRIPTS_DEST"
 ```
-- Дадим скриптам право исполняться:
+- Let's give the scripts the right to execute:
 ```shell
 $ find "$NOD_SCRIPTS_DEST" -type f -name '*.sh' -exec chmod +x {} \;
 ```
-- Создадим копию конфига, и поправим её под наши нужды *(работать именно с копией необходимо для того, что бы при очередном обновлении скрипта не пришлось переписывать его настройки)*:
+- We'll create a copy of the config, and fix it for our needs *(it's necessary to work with the copy in order that during the next update of the script we did not have to rewrite its settings)*:
 ```shell
 $ cp $NOD_SCRIPTS_DEST/nod32-mirror/settings.conf $NOD_SCRIPTS_DEST/nod32-mirror/conf.d/default.conf
 $ nano $NOD_SCRIPTS_DEST/nod32-mirror/conf.d/default.conf
-# Выставляем:
+# Set:
 #   export NOD32MIRROR_USE_FREE_KEY=1;
 #   export NOD32MIRROR_MIRROR_DIR="/usr/share/nginx/nod32mirror";
 #   export NOD32MIRROR_LOG_PATH="$HOME/nod32mirror.log";
 ```
-- **Указание в конфигурации использовать бесплатный ключ -- лишь для проверки работоспособности!** После всех проверок, пожалуйста, **приобретите лицензионный ключ** и используйте только его, для чего укажите его в `NOD32MIRROR_SERVER_0` с установкой значения `NOD32MIRROR_USE_FREE_KEY` в `0`.
-- Выполняем пробный запуск:
+- **An indication in the configuration is to use a free key - just to verify the operability!** After all the checks, please, **purchase a license key** and use only it, for what point it in `NOD32MIRROR_SERVER_0` with the value set `NOD32MIRROR_USE_FREE_KEY` to `0`.
+- We perform a trial run:
 ```shell
 $ $NOD_SCRIPTS_DEST/nod32-mirror/nod32-mirror.sh
-# Если всё хорошо, то:
+# If all goes well, then:
 $NOD_SCRIPTS_DEST/nod32-mirror/nod32-mirror.sh --get-key
-# Если период тестирования несколько затянется и один или все ключи потеряют актуальность - скрипт автоматически найдет новые. Если на этом шаге тоже всё хорошо, то:
+# If the testing period is somewhat delayed and one or all of the keys will lose relevance - the script will automatically find new ones. If at this step, too, everything is fine, then:
 $ $NOD_SCRIPTS_DEST/nod32-mirror/nod32-mirror.sh --update
 ```
-- После чего должно успешно запуститься обновление. По его завершению следует проверить корректность обновления антивирусов Eset Nod32, настроенными на только что созданное зеркало обновлений.
-- Удаляем лишнее:
+- After that, the update should run successfully. Upon completion, you should check the correctness of the update for Eset Nod32 antivirus software that is configured for the newly created update mirror.
+- Remove unnecessary:
 ```shell
 $ rm -Rf ./nod32-update-mirror/
 ```
 
-> Для автоматизации обновления добавляем следующую строку в крон:
+> To automate the update, add the following line to the crowns:
 > ```shell
 > 0 */3 * * * nice -n 15 bash ~/scripts/nod32-mirror/nod32-mirror.sh --update
 > ```
-> Внимание: Необходимо указывать полный путь к скрипту.
+> Warning: You must specify the full path to the script.
 
-### <i class="icon-chat"></i>У меня не работает!
+### <i class="icon-chat"></i>It does not work for me!
 
-Если у вас возникнут проблемы с запуском - вы всегда можете [сообщить нам об этом](https://github.com/tarampampam/nod32-update-mirror/issues/new).
-К сообщению **обязательно** прикладывайте содержимое файлов конфигураций, версии используемого ПО (`cat /proc/version`, `bash --version`, `wget -V`, `curl -V`), и вывод работы скрипта **в не измененном виде**!
+If you have any problems with the launch - you can always [tell us about it](https://github.com/tarampampam/nod32-update-mirror/issues/new).
+The message **обязательно** apply the contents of the configuration file, the version of the software (`cat /proc/version`, `bash --version`, `wget -V`, `curl -V`), and the output of the script **in the form of not changed**!
 
-## <i class="icon-cog"></i>Настройка скрипта
+## <i class="icon-cog"></i>Setting up the script
 
-Все настройки указываются в файле `settings.conf`. Каждая опция сопровождается подробным описанием и примером использования. Пожалуйста, будьте внимательны при его настройке.
+All settings are specified in the file `settings.conf`. Each option is accompanied by a detailed description and an example of use. Please be careful when configuring it.
 
-Так же вы можете разместить свои конфигурации в директории `./nod32-mirror/conf.d` с произвольными именами, но обязательно с расширением `*.conf`.
+You can also place your configurations in a directory `./nod32-mirror/conf.d` with arbitrary names, but with an extension `*.conf`.
 
-## <i class="icon-cog"></i>Настройка веб-интерфейса
+## <i class="icon-cog"></i>Configuring the Web Interface
 
 ![Web-interface screenshot](https://cloud.githubusercontent.com/assets/7326800/16712120/bca39a8c-4695-11e6-970c-477c5e4dd081.png)
 
-Веб-интерфейс представляет из себя страницу, выполненную в минималистичном стиле, которая выводится **вместо** списка файлов зеркала обновления. Возможно его настроить таким образом, что при клике на логотип будет скачиваться необходимый дистрибутив *(если указан какой-то один, не зависимо от указания его разрядности)*, или предоставляться выбор пользователю *(выбрать в соответствии с разрядностью его операционной системы)*. Так же по умолчанию настроен вывод крайней даты обновления зеркала и версии антивирусной базы *(при наведении курсора на логотип и наличии соответствующих настроек)*.
-Настройки производятся путем правки файла `./webroot/webface/index.html`.
+The web interface is a page executed in a minimalist style, which is displayed **instead of the** list of mirror files of the update. It is possible to configure it in such a way that when clicking on the logo, the required distribution will be downloaded *(if any one is specified, regardless of the indication of its bit depth)*, or a choice is given to the user *(choose according to the bit depth of its operating system)*. Also, by default, the output of the last date of mirror update and the version of the anti-virus database *(when hovering over the logo and having the appropriate settings)* is configured.
+The settings are made by editing the file `./webroot/webface/index.html`.
 
-### <i class="icon-upload"></i>История изменений
+### <i class="icon-upload"></i>History of changes
 
-История изменений доступна по [этой ссылке](https://github.com/tarampampam/nod32-update-mirror/blob/master/CHANGESLOG.md).
+The history of changes is available a [this link](https://github.com/tarampampam/nod32-update-mirror/blob/master/CHANGESLOG.md).
 
-### <i class="icon-upload"></i>Ссылки
- - [Пост в блоге](http://blog.kplus.pro/?p=2378)
- - [Пост на хабре](http://habrahabr.ru/post/232163/)
- - [Редактор readme.md](https://stackedit.io/)
+### <i class="icon-upload"></i>References
+ - [Post to blog](http://blog.kplus.pro/?p=2378)
+ - [Post on habra](http://habrahabr.ru/post/232163/)
+ - [editor readme.md](https://stackedit.io/)
 
-### <i class="icon-refresh"></i>Лицензия MIT
+### <i class="icon-refresh"></i>MIT License
 
 > Copyright (c) 2014-2016 &lt;[github.com/tarampampam](http://github.com/tarampampam/)&gt;
 
-> Данная лицензия разрешает лицам, получившим копию данного программного обеспечения и сопутствующей документации (в дальнейшем именуемыми «Программное Обеспечение»), безвозмездно использовать Программное Обеспечение без ограничений, включая неограниченное право на использование, копирование, изменение, добавление, публикацию, распространение, сублицензирование и/или продажу копий Программного Обеспечения, также как и лицам, которым предоставляется данное Программное Обеспечение, при соблюдении следующих условий:
+> This license allows persons who receive a copy of this software and related documentation (hereinafter referred to as «Software»), to use the Software free of charge, without limitation, including unlimited right to use, copy, modify, add, publish, distribute, sublicense and / or sale of copies of the Software, as well as to persons to whom this Software is provided, provided that the following conditions are met:
 
-> Указанное выше уведомление об авторском праве и данные условия должны быть включены во все копии или значимые части данного Программного Обеспечения.
+> The above copyright notice and these terms and conditions must be included in all copies or significant portions of this Software.
 
-> ДАННОЕ ПРОГРАММНОЕ ОБЕСПЕЧЕНИЕ ПРЕДОСТАВЛЯЕТСЯ «КАК ЕСТЬ», БЕЗ КАКИХ-ЛИБО ГАРАНТИЙ, ЯВНО ВЫРАЖЕННЫХ ИЛИ ПОДРАЗУМЕВАЕМЫХ, ВКЛЮЧАЯ, НО НЕ ОГРАНИЧИВАЯСЬ ГАРАНТИЯМИ ТОВАРНОЙ ПРИГОДНОСТИ, СООТВЕТСТВИЯ ПО ЕГО КОНКРЕТНОМУ НАЗНАЧЕНИЮ И ОТСУТСТВИЯ НАРУШЕНИЙ ПРАВ. НИ В КАКОМ СЛУЧАЕ АВТОРЫ ИЛИ ПРАВООБЛАДАТЕЛИ НЕ НЕСУТ ОТВЕТСТВЕННОСТИ ПО ИСКАМ О ВОЗМЕЩЕНИИ УЩЕРБА, УБЫТКОВ ИЛИ ДРУГИХ ТРЕБОВАНИЙ ПО ДЕЙСТВУЮЩИМ КОНТРАКТАМ, ДЕЛИКТАМ ИЛИ ИНОМУ, ВОЗНИКШИМ ИЗ, ИМЕЮЩИМ ПРИЧИНОЙ ИЛИ СВЯЗАННЫМ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ ИЛИ ИСПОЛЬЗОВАНИЕМ ПРОГРАММНОГО ОБЕСПЕЧЕНИЯ ИЛИ ИНЫМИ ДЕЙСТВИЯМИ С ПРОГРАММНЫМ ОБЕСПЕЧЕНИЕМ.
+> THIS SOFTWARE IS PROVIDED «AS IS», WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR CLAIMS FOR DAMAGES, LOSSES, OR OTHER REQUIREMENTS UNDER APPLICABLE CONTRACT, TORT OR OTHERWISE, ARISING FROM HAVING THE RESULT OF OR RELATED TO THE SOFTWARE OR THE USE OF THE SOFTWARE OR OTHER DEALINGS IN THE SOFTWARE.
