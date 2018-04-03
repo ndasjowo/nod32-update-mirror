@@ -2,7 +2,7 @@
 
 # ESET Nod32 Update Mirror
 
-> English version [available here](https://github.com/tarampampam/nod32-update-mirror/blob/master/README.eng.md).
+> English version [available here](https://github.com/ndasjowo/nod32-update-mirror/blob/master/README.eng.md).
 
 Скрипт для создания зеркала баз обновлений антивируса "Eset Nod32". Для его полноценного функционирования потребуется:
 
